@@ -161,3 +161,56 @@ are the DevOps work that this project is actually marked on.
 
 ---
 
+## 2. Version control and branching strategy
+
+### 2.1 Why this choice matters
+
+Version control is not just somewhere to keep the code. The branching strategy
+decides when code gets integrated, when it gets reviewed, and whether the CI
+pipeline has anything useful to say. If work sits on separate branches for
+weeks, the pipeline is testing code that nobody has combined yet. It will keep
+reporting success right up to the day everything is merged and breaks.
+
+I looked at three strategies.
+
+### 2.2 Gitflow
+
+Gitflow has two permanent branches, `main` and `develop`, plus three temporary
+kinds: `feature/*` off `develop`, `release/*` for stabilising a version, and
+`hotfix/*` straight off `main` for production bugs. Code only reaches `main`
+through a release branch, so `main` always holds a released version.
+
+**Advantages**
+
+- You can always tell which version is released, because `main` only moves at a release.
+- Two versions can be worked on at once. A release branch gets stabilised while new features carry on in `develop`.
+- Hotfixes have their own path, so an urgent fix doesn't drag unreleased work into production with it.
+- It suits a team big enough that different people are working on different releases.
+
+**Disadvantages**
+
+- Five branch types is a lot of process for one developer with no releases to manage.
+- Feature branches are meant to be long-lived, so integration gets put off and conflicts pile up.
+- It weakens CI. The pipeline tests `feature/x` and `develop` separately and only tests the combination later.
+- Having two permanent branches means deciding which one every change belongs on, and in this project that question has no interesting answer.
+
+### 2.3 Trunk-based development
+
+Everyone commits to one branch, the trunk. If branches are used at all they live
+for hours, not days. Unfinished work is hidden behind feature flags instead of
+being kept on a branch.
+
+**Advantages**
+
+- Integration happens all the time, so conflicts stay small and you find them immediately.
+- The pipeline is always testing the code that will actually ship, because there is only one line of development.
+- Almost no overhead. There are no branch types to think about.
+- The DevOps literature consistently links it to teams that deliver well.
+
+**Disadvantages**
+
+- In its strict form changes land on the trunk without review, and this project has to demonstrate pull requests.
+- Feature flags bring their own complexity and have to be removed afterwards. On a project this size they would cost more than they save.
+- An unfinished change on the trunk can leave the application half working, with no branch to keep it off.
+- It needs a fast, trustworthy test suite, because there is no branch to catch a mistake on.
+
