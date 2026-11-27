@@ -7,8 +7,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-// The container is static so every integration test shares one database and one
-// Spring context instead of starting Postgres again for each class.
+// Static so every integration test class shares one database.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers

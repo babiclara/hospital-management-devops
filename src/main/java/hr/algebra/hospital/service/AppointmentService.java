@@ -53,8 +53,8 @@ public class AppointmentService {
         return appointments.findById(id).orElseThrow(() -> new NotFoundException("Appointment", id));
     }
 
-    // Checked here so the receptionist gets a readable message, and again by the
-    // unique index, which is what holds when two bookings arrive at once.
+    // Checked here for a readable message, and again by the unique index,
+    // which is what holds when two bookings arrive at once.
     @Transactional
     public Appointment schedule(Appointment appointment) {
         assertSlotFree(appointment);
