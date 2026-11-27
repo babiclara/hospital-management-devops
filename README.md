@@ -214,3 +214,35 @@ being kept on a branch.
 - An unfinished change on the trunk can leave the application half working, with no branch to keep it off.
 - It needs a fast, trustworthy test suite, because there is no branch to catch a mistake on.
 
+### 2.4 GitHub Flow
+
+One permanent branch, `main`, which is always deployable. Every change is made
+on a short-lived branch off `main`, opened as a pull request, checked by the
+pipeline, reviewed and merged within a day or two. There are no release
+branches. A release is a tag on `main`.
+
+**Advantages**
+
+- Keeps the short-lived branches and constant integration of trunk-based development.
+- Adds the pull request as a review point, which is exactly where the pipeline runs.
+- One permanent branch, so there is never a question about where a change goes.
+- The issue, the branch and the pull request form a chain you can follow in the GitHub interface, which is what this project asks for.
+
+**Disadvantages**
+
+- No way to stabilise one version while building the next, so it doesn't suit software shipped as numbered releases.
+- `main` is only as deployable as the tests are honest. With weak tests the whole model quietly fails.
+
+### 2.5 Comparison
+
+| | Gitflow | Trunk-based | GitHub Flow |
+|---|---|---|---|
+| Permanent branches | 2 | 1 | 1 |
+| Branch lifetime | days to weeks | hours | hours to days |
+| Review point | release branch | after merge, if at all | pull request, before merge |
+| Integration frequency | low | continuous | high |
+| Pipeline tests what ships | not until release | yes | yes, at the pull request |
+| Parallel releases | yes | no | no |
+| Suits | large teams, versioned products | large teams with mature tests | small teams, continuously delivered web apps |
+| Process overhead | high | low | low |
+
