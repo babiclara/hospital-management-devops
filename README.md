@@ -96,3 +96,28 @@ Should means it makes the demonstration better but I could drop it.
 | FR-27 | Limit a doctor to the appointments and medical information they are allowed to see | Doctor | Must |
 | FR-28 | Let users sign out | All | Must |
 
+### 1.3 Non-functional requirements
+
+| ID | Requirement | How I verify it |
+|----|-------------|-----------------|
+| NFR-01 | A normal request finishes within two seconds under the demonstration workload | Request duration histogram in Grafana, with buckets at 100 ms, 500 ms, 1 s and 2 s |
+| NFR-02 | The application stays available during normal operation | Container healthcheck polls the liveness probe |
+| NFR-03 | The application recovers on its own after an application or container failure | Docker restart policy and healthcheck. I demonstrate it by killing the container and watching it come back |
+| NFR-04 | Passwords are never stored as plain text | BCrypt hashes in the database, which you can see by querying the `app_user` table |
+| NFR-05 | Role permissions are enforced on the server, not just hidden in the interface | Integration tests ask for forbidden URLs directly and expect HTTP 403 |
+| NFR-06 | The application runs as a container image and behaves the same anywhere | Image published to GHCR and started with `docker compose` |
+| NFR-07 | Every change is built, tested and packaged automatically before it can be merged | GitHub Actions pipeline, set as a required status check on `main` |
+| NFR-08 | The database schema is versioned and applied automatically | Flyway migrations run at startup and Hibernate validates the result |
+
+Two of these are worth explaining.
+
+NFR-01 is the only number the scenario actually gives me, and it is why the
+application records a histogram of request times instead of an average. An
+average would hide the slow requests. A histogram with a bucket at two seconds
+tells me directly how many requests met the target.
+
+NFR-03 is what makes the deployment part of this project worth anything. If I
+have to restart the application by hand then I haven't really delivered it. The
+healthcheck has to work without signing in, which is why the liveness endpoint
+is the only URL besides the login page that is public.
+
