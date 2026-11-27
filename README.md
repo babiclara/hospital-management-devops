@@ -123,7 +123,7 @@ is the only URL besides the login page that is public.
 
 ### 1.4 Task decomposition
 
-I grouped the requirements into seven epics. Each epic is a label in GitHub
+I grouped the requirements into eight epics. Each epic is a label in GitHub
 Issues, and each task below is one issue with its own Definition of Done,
 tracked on the project board in section 3.
 
@@ -153,11 +153,17 @@ reading data and changing it, because those need different tests.
 | | T-18 Continuous delivery to GHCR with artifacts | NFR-06 |
 | | T-19 End to end tests in the pipeline | verifies FR-13, FR-14, FR-22 |
 | | T-20 Monitoring and dashboards | NFR-01, NFR-02, NFR-03 |
+| **E8 Documentation** | T-21 Project documentation in the README | the written analysis |
 
-That is 20 tasks covering 28 functional and 8 non-functional requirements. Each
+That is 21 tasks covering 28 functional and 8 non-functional requirements. Each
 requirement is built by exactly one task. T-19 shows up against three of them a
 second time because it tests them rather than builds them. The four tasks in E7
 are the DevOps work that this project is actually marked on.
+
+T-21 is the odd one out. The written sections of this README are not features, so
+they do not belong to any of the application tasks, but every change to the
+repository still needs an issue behind it. I keep one documentation issue open and
+reference it from each pull request that adds a section.
 
 ---
 
@@ -306,3 +312,86 @@ was switched on. At that point there was no pipeline to run and nothing to
 review against. Everything from T-03 onwards follows the process above: an
 issue, a branch named after it, a pull request, a passing pipeline and a squash
 merge.
+
+---
+
+## 3. Tracking the work
+
+### 3.1 Where the work lives
+
+All of the work is tracked in the GitHub repository itself rather than in a
+separate tool. Issues hold the requirements, the tasks and any defects. The
+project board shows where each one has got to.
+
+**Board:** <https://github.com/users/babiclara/projects/1>
+
+Each of the 21 tasks from section 1.4 is one issue, numbered so that issue 7 is
+task T-07. Every issue carries two labels: the epic it belongs to, and whether
+it is a task or a defect. The epic labels are the eight from section 1.4, so
+filtering the issue list by `E5 Appointments` gives exactly the appointment work.
+
+The board has four columns.
+
+| Column | Meaning |
+|---|---|
+| Todo | Not started. No branch exists yet |
+| In Progress | A branch is open and I am working on it |
+| In Review | A pull request is open and the pipeline is running against it |
+| Done | Merged, and every box in the Definition of Done is ticked |
+
+In Review exists as a separate column because a pull request waiting on the
+pipeline is not the same as work still being written. If I merged those two
+states I could not tell, looking at the board, whether something was unfinished
+or just waiting for a build.
+
+### 3.2 Definition of Done
+
+Every issue has a Definition of Done written as a checklist. I wrote a specific
+one for each task rather than reusing a template, because a generic checklist
+like "code written, tests pass, merged" would be true of almost anything and
+would not tell me whether the task was actually finished.
+
+Take T-12, the double booking rule. Its Definition of Done is:
+
+- [ ] Booking a second appointment for the same doctor at the same instant is refused
+- [ ] The receptionist sees a readable message naming the doctor and the time
+- [ ] Nothing is written to the database when a booking is refused
+- [ ] The rule is also enforced by a database constraint, so two simultaneous requests cannot both succeed
+- [ ] Cancelling an appointment frees the slot so it can be booked again
+- [ ] Unit test for the service rule and integration test for the database constraint
+
+Three of those six points are things I would probably have missed if I had
+relied on a general checklist. The database constraint, the behaviour when a
+booking is refused, and the fact that cancelling has to release the slot are all
+specific to this task, and all three are places where the feature could look
+finished while being wrong.
+
+The checklists follow two rules. Each line has to be something I can check by
+using the application or reading a test result, not something I decide is true.
+And where a task has a rule that could be enforced in more than one place, the
+checklist says where, so that I cannot tick it off after doing only the easy
+half.
+
+### 3.3 How a task moves
+
+This is the sequence the repository shows for every task from T-03 onwards:
+
+1. The requirement in section 1.2 already exists, which is where the task came from.
+2. The issue is picked up and its card moves to In Progress.
+3. A branch is created, named `feature/<issue number>-<short description>`, for example `feature/12-double-booking`.
+4. Work is committed to that branch, and pushing it starts the pipeline.
+5. A pull request is opened against `main`, with `Closes #12` in the description so GitHub links them.
+6. The card moves to In Review while the pipeline runs.
+7. The pipeline has to pass. `main` is protected, so a failing build cannot be merged.
+8. The pull request is squash merged, the branch is deleted, the issue closes itself, and the card moves to Done.
+
+Because the branch name contains the issue number and the pull request closes
+the issue, the issue, the branch and the pull request are all reachable from one
+another in the GitHub interface. Opening any one of them shows the other two.
+
+### 3.4 Current state
+
+T-01 and T-02 were built before the board existed, as explained at the end of
+section 2.7, and their cards are in Done with a comment on each issue recording
+what was actually delivered. T-21 is in In Progress, because this section is the
+first part of it. Everything else is in Todo.
