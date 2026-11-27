@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hospital Management</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <span class="brand">Hospital Management</span>
+    <span class="spacer"></span>
+    <span class="muted" th:text="${username}">user</span>
+    <form th:action="@{/logout}" method="post" class="inline">
+        <button type="submit" class="link">Sign out</button>
+    </form>
+</header>
+
+<main class="page">
+    <h1>Welcome</h1>
+    <p>You are signed in as <strong th:text="${username}">user</strong>.</p>
+    <p class="muted">Role: <span th:text="${roles}">[]</span></p>
+</main>
+</body>
+</html>
