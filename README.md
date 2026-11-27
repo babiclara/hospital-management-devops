@@ -246,3 +246,63 @@ branches. A release is a tag on `main`.
 | Suits | large teams, versioned products | large teams with mature tests | small teams, continuously delivered web apps |
 | Process overhead | high | low | low |
 
+### 2.6 What I chose and why
+
+I chose **GitHub Flow**.
+
+Gitflow is built around coordination. It coordinates people working on different
+releases, and it separates a released version from work in progress. I am one
+person and this project has no releases, so neither problem exists here. If I
+used Gitflow I would end up with a `develop` branch that never does anything,
+and if someone asked me what it was protecting against I would not have an
+answer.
+
+Strict trunk-based development is out for a different reason. The project has to
+show the chain from requirement to issue to branch to pull request, and
+committing straight to the trunk removes the pull request completely.
+
+GitHub Flow keeps what makes trunk-based development good, which is one line of
+development, short branches and constant integration, and adds the review gate
+the task wants. I think of it as trunk-based development with a required check
+in front of it rather than a different idea altogether.
+
+Two other things pushed me the same way. The application is delivered
+continuously as a container image, so every merge to `main` publishes to GHCR
+and there is no customer sitting on last month's version waiting for a patch.
+And because a branch only lives a day, the pipeline is always testing something
+almost identical to `main`, which means a green build actually tells me
+something. With a Gitflow feature branch open for two weeks, green would only
+mean the branch works by itself.
+
+What I give up is the ability to stabilise one version while building the next.
+I am accepting that deliberately, because nothing in this project would ever use
+it.
+
+### 2.7 The rules I follow
+
+| Rule | Value |
+|---|---|
+| Permanent branch | `main`, always deployable |
+| Branch naming | `feature/<issue-number>-<short-description>`, or `fix/<issue-number>-<short-description>` for bugs |
+| Branch lifetime | Opened and merged within a day or two |
+| Merge method | Squash merge, so one task becomes one commit on `main` |
+| Branch deletion | Automatic after merge |
+| Direct pushes to `main` | Blocked by branch protection |
+| Required to merge | The CI pipeline has to pass |
+| Commit messages | Lower case, saying what was added or changed, for example `added appointment service with double booking check` |
+
+I squash merge so the history of `main` reads as one commit per finished task,
+each one traceable back to the issue that asked for it. The individual commits
+are still there inside the pull request if anyone wants to see them.
+
+Branch protection is on for `main`. Direct pushes are refused and the pipeline
+is a required check. Without that the process would just be a convention, and
+nothing in the repository would show whether I had actually followed it.
+
+There is one exception visible in the history and I would rather state it than
+leave it to be found. The foundation commits, which are tasks T-01 and T-02 plus
+the requirements analysis, went straight onto `main` before branch protection
+was switched on. At that point there was no pipeline to run and nothing to
+review against. Everything from T-03 onwards follows the process above: an
+issue, a branch named after it, a pull request, a passing pipeline and a squash
+merge.
