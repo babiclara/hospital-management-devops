@@ -41,3 +41,58 @@ moved it to the non-functional list.
 Requirements marked Must are needed for the application to match the scenario.
 Should means it makes the demonstration better but I could drop it.
 
+### 1.2 Functional requirements
+
+#### Patient management
+
+| ID | Requirement | Role | Priority |
+|----|-------------|------|----------|
+| FR-01 | Register a new patient with first name, last name, date of birth, contact details and address | Receptionist | Must |
+| FR-02 | Search for patients by name | Receptionist, Doctor, Administrator | Must |
+| FR-03 | View a single patient's full details | Receptionist, Doctor, Administrator | Must |
+| FR-04 | Edit a patient's details, for example when they change their phone number | Receptionist | Must |
+| FR-05 | Deactivate a patient record without deleting it, so previous appointments stay intact | Receptionist | Must |
+| FR-06 | Reactivate a patient who was deactivated earlier | Receptionist | Should |
+
+#### Doctor management
+
+| ID | Requirement | Role | Priority |
+|----|-------------|------|----------|
+| FR-07 | Register a doctor with name, contact details and medical specialization | Administrator | Must |
+| FR-08 | View the list of doctors and a single doctor's details | Administrator | Must |
+| FR-09 | Update a doctor's details | Administrator | Must |
+| FR-10 | Deactivate a doctor who is no longer available | Administrator | Must |
+| FR-11 | See which doctors are currently available to take appointments | Receptionist | Must |
+| FR-12 | Filter available doctors by specialization | Receptionist | Should |
+
+#### Appointment management
+
+| ID | Requirement | Role | Priority |
+|----|-------------|------|----------|
+| FR-13 | Schedule an appointment by picking a patient and a doctor and entering date, time and reason for the visit | Receptionist | Must |
+| FR-14 | Refuse an appointment that would give one doctor two appointments at the same date and time | Receptionist | Must |
+| FR-15 | View all existing appointments | Receptionist, Administrator | Must |
+| FR-16 | Update an existing appointment | Receptionist | Must |
+| FR-17 | Cancel an appointment, which frees the doctor's slot again | Receptionist | Must |
+| FR-18 | Mark an appointment as scheduled, completed or cancelled | Receptionist, Doctor | Must |
+
+#### Medical records
+
+| ID | Requirement | Role | Priority |
+|----|-------------|------|----------|
+| FR-19 | See the patients who have appointments with the signed-in doctor | Doctor | Must |
+| FR-20 | Record what happened at a consultation: date of visit, diagnosis and notes | Doctor | Must |
+| FR-21 | View a patient's previous medical records | Doctor | Must |
+| FR-22 | Export the signed-in doctor's medical records as a CSV report | Doctor | Must |
+
+#### Authentication and access control
+
+| ID | Requirement | Role | Priority |
+|----|-------------|------|----------|
+| FR-23 | Make users sign in before they reach any protected page | All | Must |
+| FR-24 | Tell the receptionist, doctor and administrator roles apart | All | Must |
+| FR-25 | Let a receptionist manage patients and appointments, but not medical notes | Receptionist | Must |
+| FR-26 | Let an administrator manage doctors and user accounts | Administrator | Must |
+| FR-27 | Limit a doctor to the appointments and medical information they are allowed to see | Doctor | Must |
+| FR-28 | Let users sign out | All | Must |
+
