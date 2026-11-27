@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: hospital-management
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/hospital}
+    username: ${SPRING_DATASOURCE_USERNAME:hospital}
+    password: ${SPRING_DATASOURCE_PASSWORD:hospital}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Europe/Zagreb
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:true}
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    # Buckets so the dashboard can show the two second target, not just an average.
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 100ms,500ms,1s,2s
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  observations:
+    key-values:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    hr.algebra.hospital: INFO
