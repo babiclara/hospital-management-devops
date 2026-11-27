@@ -121,3 +121,43 @@ have to restart the application by hand then I haven't really delivered it. The
 healthcheck has to work without signing in, which is why the liveness endpoint
 is the only URL besides the login page that is public.
 
+### 1.4 Task decomposition
+
+I grouped the requirements into seven epics. Each epic is a label in GitHub
+Issues, and each task below is one issue with its own Definition of Done,
+tracked on the project board in section 3.
+
+I sized the tasks so that one branch and one pull request finish one task. Where
+a requirement was too big for that, like patient management, I split it between
+reading data and changing it, because those need different tests.
+
+| Epic | Task | Covers |
+|------|------|--------|
+| **E1 Foundation** | T-01 Project setup, build configuration and container image | — |
+| | T-02 Database schema and seed data | NFR-08 |
+| **E2 Security** | T-03 Sign in and sign out with hashed passwords | FR-23, FR-28, NFR-04 |
+| | T-04 Role based access rules for the three roles | FR-24 – FR-27, NFR-05 |
+| **E3 Patients** | T-05 Register and edit a patient | FR-01, FR-04 |
+| | T-06 Search and view patients | FR-02, FR-03 |
+| | T-07 Deactivate and reactivate a patient | FR-05, FR-06 |
+| **E4 Doctors** | T-08 Register and edit a doctor | FR-07, FR-09 |
+| | T-09 List doctors, view details, filter by specialization | FR-08, FR-11, FR-12 |
+| | T-10 Deactivate a doctor | FR-10 |
+| **E5 Appointments** | T-11 Schedule an appointment | FR-13 |
+| | T-12 Stop a doctor being double booked | FR-14 |
+| | T-13 View, update and cancel appointments | FR-15 – FR-18 |
+| **E6 Medical records** | T-14 Doctor's own appointments and patients | FR-19 |
+| | T-15 Record and view consultation outcomes | FR-20, FR-21 |
+| | T-16 CSV export of a doctor's records | FR-22 |
+| **E7 Delivery** | T-17 Continuous integration pipeline | NFR-07 |
+| | T-18 Continuous delivery to GHCR with artifacts | NFR-06 |
+| | T-19 End to end tests in the pipeline | verifies FR-13, FR-14, FR-22 |
+| | T-20 Monitoring and dashboards | NFR-01, NFR-02, NFR-03 |
+
+That is 20 tasks covering 28 functional and 8 non-functional requirements. Each
+requirement is built by exactly one task. T-19 shows up against three of them a
+second time because it tests them rather than builds them. The four tasks in E7
+are the DevOps work that this project is actually marked on.
+
+---
+
