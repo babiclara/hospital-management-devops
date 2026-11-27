@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: '25'
+
+jobs:
+  build:
+    name: Build, test and package
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@v7
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      # Testcontainers starts a real PostgreSQL container, so the build fails
+      # early and with a clear message if the daemon is not running.
+      - name: Check Docker is available
+        run: docker info > /dev/null
+
+      - name: Compile
+        run: ./mvnw -B --no-transfer-progress compile
+
+      - name: Unit tests
+        run: ./mvnw -B --no-transfer-progress test
+
+      # verify runs the integration tests, produces the coverage report and
+      # packages the jar. Unit tests are skipped here because the previous step
+      # already ran them.
+      - name: Integration tests and package
+        run: ./mvnw -B --no-transfer-progress verify -Dskip.unit.tests=true
+
+      - name: Summarise the results
+        if: always()
+        run: |
+          {
+            echo "### Test results"
+            echo ""
+            unit=$(find target/surefire-reports -name 'TEST-*.xml' 2>/dev/null | wc -l | tr -d ' ')
+            integ=$(find target/failsafe-reports -name 'TEST-*.xml' 2>/dev/null | wc -l | tr -d ' ')
+            echo "- Unit test classes: ${unit}"
+            echo "- Integration test classes: ${integ}"
+            echo ""
+            echo "### Artifact"
+            ls -1 target/*.jar 2>/dev/null | sed 's|target/|- |' || echo "- no jar produced"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-${{ github.run_number }}
+          path: target/site/jacoco/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload the packaged application
+        uses: actions/upload-artifact@v7
+        with:
+          name: hospital-management-jar-${{ github.run_number }}
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 30
